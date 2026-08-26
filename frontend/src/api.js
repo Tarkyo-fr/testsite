@@ -1,7 +1,12 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Tous les appels passent par des chemins relatifs (même origine que le
+// frontend). En prod, Netlify les relaie vers le backend (voir
+// scripts/gen-redirects.mjs) ; en local, c'est le proxy Vite (vite.config.js)
+// qui les relaie vers http://localhost:4000. Le cookie de session reste
+// ainsi "first-party" dans les deux cas, ce qui évite les blocages des
+// navigateurs sur les cookies cross-site.
 
 async function request(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(path, {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     ...options
@@ -15,9 +20,9 @@ async function request(path, options = {}) {
 
 export const api = {
   me: () => request('/auth/me'),
-  discordLoginUrl: () => `${BASE}/auth/discord`,
+  discordLoginUrl: () => '/auth/discord',
   discordLogout: () => request('/auth/discord/logout', { method: 'POST' }),
-  twitchLoginUrl: () => `${BASE}/auth/twitch`,
+  twitchLoginUrl: () => '/auth/twitch',
   twitchLogout: () => request('/auth/twitch/logout', { method: 'POST' }),
 
   giveaway: () => request('/api/giveaway'),
@@ -41,5 +46,3 @@ export const api = {
   config: () => request('/api/community/config'),
   pointshop: () => request('/api/community/pointshop')
 };
-
-export const BASE_URL = BASE;

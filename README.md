@@ -84,11 +84,22 @@ est réinitialisé à chaque redéploiement. Pour garder les données en prod, a
 sur `backend/data`, ou migre lowdb vers une vraie base (Postgres/Railway DB).
 
 ### Frontend → Netlify
-Le fichier `netlify.toml` à la racine configure déjà :
-- `base = frontend`, `command = npm run build`, `publish = frontend/dist`
-- une redirection SPA pour que `/planning`, `/site`, `/profil` fonctionnent en rechargement direct
+Le frontend et le backend sont hébergés séparément, donc le navigateur les voit comme deux
+domaines différents. Pour éviter les soucis de cookie de session cross-domaine (bloqué par les
+protections anti-tracking de Safari/Chrome), le frontend **proxy** ses appels `/api/*` et
+`/auth/*` vers le backend via Netlify, au lieu de les appeler directement. Le cookie reste ainsi
+"first-party" pour le navigateur.
 
-Il ne reste qu'à :
-1. Connecter le repo GitHub dans Netlify ("Import from Git")
-2. Ajouter la variable d'environnement `VITE_API_URL` = URL de ton backend Render (ex: `https://ton-backend.onrender.com`)
-3. Mettre à jour `FRONTEND_URL`, `DISCORD_REDIRECT_URI`, `TWITCH_REDIRECT_URI` côté backend avec les URLs finales, et déclarer ces mêmes redirect URIs dans les consoles développeur Discord/Twitch.
+1. Connecte le repo GitHub dans Netlify ("Import from Git") — `netlify.toml` configure déjà
+   `base = frontend`, `command = npm run build`, `publish = dist`.
+2. Ajoute la variable d'environnement Netlify `BACKEND_URL` = URL de ton backend (ex:
+   `https://ton-backend.up.railway.app`, **sans slash final**). C'est utilisée au moment du
+   build pour générer `public/_redirects`, qui relaie `/api/*` et `/auth/*` vers le backend.
+3. Renseigne `DISCORD_REDIRECT_URI` et `TWITCH_REDIRECT_URI` côté **backend** avec l'URL
+   **Netlify** (pas Railway) : `https://tonsite.netlify.app/auth/discord/callback` et
+   `.../auth/twitch/callback`. Déclare ces mêmes redirect URIs dans les consoles développeur
+   Discord et Twitch.
+4. Renseigne `FRONTEND_URL` côté backend avec l'URL Netlify finale.
+
+En local (`npm run dev` dans `frontend/`), le proxy équivalent est déjà configuré dans
+`vite.config.js` (`/api` et `/auth` → `http://localhost:4000`) — aucune variable à ajouter.

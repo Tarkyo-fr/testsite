@@ -6,7 +6,7 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Les redirections (proxy /api et /auth vers le backend, + fallback SPA)
+# sont générées dynamiquement dans public/_redirects par
+# frontend/scripts/gen-redirects.mjs au moment du build, à partir de la
+# variable d'environnement Netlify BACKEND_URL.
