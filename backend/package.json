@@ -1,0 +1,20 @@
+{
+  "name": "creator-site-backend",
+  "version": "1.0.0",
+  "description": "Backend du site créateur (clone fonctionnel de guizzi.fr)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "cookie-session": "^2.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "lowdb": "^7.0.1",
+    "node-fetch": "^3.3.2",
+    "nanoid": "^5.0.7"
+  }
+}
