@@ -1,10 +1,17 @@
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const file = path.join(__dirname, '..', 'data', 'db.json');
+const dataDir = path.join(__dirname, '..', 'data');
+const file = path.join(dataDir, 'db.json');
+
+// Le dossier data/ n'est pas forcément présent après un clone/déploiement
+// (Git ne suit pas les dossiers vides) : on le crée s'il manque.
+fs.mkdirSync(dataDir, { recursive: true });
+
 
 const defaultData = {
   // Session <-> compte lié (Discord obligatoire, Twitch optionnel)
