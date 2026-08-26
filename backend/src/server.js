@@ -19,7 +19,7 @@ const app = express();
 app.set('trust proxy', 1); // nécessaire derrière le proxy Railway pour que les cookies "secure" fonctionnent
 
 const FRONTEND_URL = (process.env.FRONTEND_URL || '').replace(/\/+$/, ''); // retire un / final éventuel
-const isProd = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_ENVIRONMENT;
+const isLocalDev = /^https?:\/\/(localhost|127\.0\.0\.1)/.test(FRONTEND_URL);
 
 app.use(express.json());
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
@@ -30,8 +30,9 @@ app.use(
     maxAge: 30 * 24 * 60 * 60 * 1000,
     // Frontend (Netlify) et backend (Railway) sont sur des domaines différents :
     // un cookie cross-site n'est envoyé par le navigateur que s'il est SameSite=None + Secure.
-    sameSite: isProd ? 'none' : 'lax',
-    secure: isProd
+    // On ne relâche cette règle qu'en dev local (localhost), où le navigateur ne peut pas de toute façon voir de https.
+    sameSite: isLocalDev ? 'lax' : 'none',
+    secure: !isLocalDev
   })
 );
 
