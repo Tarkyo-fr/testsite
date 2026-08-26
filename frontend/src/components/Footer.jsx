@@ -1,4 +1,5 @@
 import { siteConfig } from '../siteConfig.js';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -10,6 +11,9 @@ export default function Footer() {
         <a href={siteConfig.socials.instagram} className="hover:text-flare transition-colors focus-ring">Instagram</a>
         <a href={siteConfig.socials.discord} className="hover:text-flare transition-colors focus-ring">Discord</a>
       </div>
+      <Link to="/admin" className="mt-3 inline-block text-xs text-muted/50 hover:text-muted focus-ring">
+        Admin
+      </Link>
     </footer>
   );
 }

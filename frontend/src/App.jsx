@@ -4,6 +4,7 @@ import Home from './pages/Home.jsx';
 import Planning from './pages/Planning.jsx';
 import Site from './pages/Site.jsx';
 import Profil from './pages/Profil.jsx';
+import Admin from './pages/Admin.jsx';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/planning" element={<Planning />} />
         <Route path="/site" element={<Site />} />
         <Route path="/profil" element={<Profil />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </AuthProvider>
   );

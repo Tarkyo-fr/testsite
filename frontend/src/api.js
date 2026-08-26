@@ -36,6 +36,17 @@ export const api = {
   applyCandidature: message =>
     request('/api/candidatures', { method: 'POST', body: JSON.stringify({ message }) }),
 
+  // --- admin (protégé côté backend par ADMIN_DISCORD_IDS) ---
+  adminCandidatures: () => request('/api/candidatures'),
+  adminUpdateCandidature: (id, status) =>
+    request(`/api/candidatures/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  adminSavePlanning: planning =>
+    request('/api/planning', { method: 'PUT', body: JSON.stringify({ planning }) }),
+  adminSaveTournage: payload =>
+    request('/api/planning/tournage', { method: 'PUT', body: JSON.stringify(payload) }),
+  adminCreateGiveaway: payload =>
+    request('/api/giveaway', { method: 'POST', body: JSON.stringify(payload) }),
+
   saveProfile: payload => request('/api/profile', { method: 'PUT', body: JSON.stringify(payload) }),
   verifyFaceit: profileUrl =>
     request('/api/profile/faceit/verify', { method: 'POST', body: JSON.stringify({ profileUrl }) }),
