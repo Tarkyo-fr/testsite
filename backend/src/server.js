@@ -16,15 +16,29 @@ dotenv.config();
 await initDb();
 
 const app = express();
+app.set('trust proxy', 1); // nécessaire derrière le proxy Railway pour que les cookies "secure" fonctionnent
+
+const FRONTEND_URL = (process.env.FRONTEND_URL || '').replace(/\/+$/, ''); // retire un / final éventuel
+const isProd = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_ENVIRONMENT;
+
 app.use(express.json());
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(
   cookieSession({
     name: 'session',
     secret: process.env.SESSION_SECRET || 'dev-secret',
-    maxAge: 30 * 24 * 60 * 60 * 1000
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    // Frontend (Netlify) et backend (Railway) sont sur des domaines différents :
+    // un cookie cross-site n'est envoyé par le navigateur que s'il est SameSite=None + Secure.
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd
   })
 );
+
+app.use((req, res, next) => {
+  req.frontendUrl = FRONTEND_URL;
+  next();
+});
 
 app.use('/auth', authRoutes);
 app.use('/api/giveaway', giveawayRoutes);

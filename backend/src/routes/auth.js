@@ -17,7 +17,7 @@ router.get('/discord', (req, res) => {
 
 router.get('/discord/callback', async (req, res) => {
   const { code } = req.query;
-  if (!code) return res.redirect(`${process.env.FRONTEND_URL}/profil?error=discord`);
+  if (!code) return res.redirect(`${req.frontendUrl}/profil?error=discord`);
 
   try {
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
@@ -68,10 +68,10 @@ router.get('/discord/callback', async (req, res) => {
     await db.write();
 
     req.session.userId = user.id;
-    res.redirect(`${process.env.FRONTEND_URL}/profil`);
+    res.redirect(`${req.frontendUrl}/profil`);
   } catch (err) {
     console.error('Discord OAuth error', err);
-    res.redirect(`${process.env.FRONTEND_URL}/profil?error=discord`);
+    res.redirect(`${req.frontendUrl}/profil?error=discord`);
   }
 });
 
@@ -94,7 +94,7 @@ router.get('/twitch', (req, res) => {
 router.get('/twitch/callback', async (req, res) => {
   const { code } = req.query;
   if (!code || !req.session.userId) {
-    return res.redirect(`${process.env.FRONTEND_URL}/profil?error=twitch`);
+    return res.redirect(`${req.frontendUrl}/profil?error=twitch`);
   }
   try {
     const tokenRes = await fetch('https://id.twitch.tv/oauth2/token', {
@@ -128,10 +128,10 @@ router.get('/twitch/callback', async (req, res) => {
       user.twitchAccessToken = token.access_token; // needed later for reward lookups
       await db.write();
     }
-    res.redirect(`${process.env.FRONTEND_URL}/profil`);
+    res.redirect(`${req.frontendUrl}/profil`);
   } catch (err) {
     console.error('Twitch OAuth error', err);
-    res.redirect(`${process.env.FRONTEND_URL}/profil?error=twitch`);
+    res.redirect(`${req.frontendUrl}/profil?error=twitch`);
   }
 });
 
